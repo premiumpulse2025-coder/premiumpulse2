@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { Header } from "@/components/sections/header";
@@ -12,7 +12,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { AlertCircle, Eye, EyeOff, UserPlus, Shield, Check } from "lucide-react";
 import { motion } from "framer-motion";
 
-export default function RegisterPage() {
+function RegisterForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const redirect = searchParams.get("redirect") || "/";
@@ -68,20 +68,7 @@ export default function RegisterPage() {
   const strength = passwordStrength();
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-violet-50/50 via-white to-violet-50/30">
-      <Header />
-      <main className="pt-[88px]">
-        <section className="bg-gradient-to-r from-violet-600 via-purple-600 to-violet-700 text-white py-16">
-          <div className="container mx-auto px-4 text-center">
-            <div className="inline-flex items-center gap-3 bg-white/20 px-5 py-2 rounded-full text-sm font-medium mb-6">
-              <Shield className="h-4 w-4" /> Create Account
-            </div>
-            <h1 className="text-3xl md:text-4xl font-bold mb-3">Get Started</h1>
-            <p className="text-violet-100 text-lg">Create your PremiumPulse account to access insurance plans</p>
-          </div>
-        </section>
-
-        <section className="container mx-auto px-4 py-16">
+    <section className="container mx-auto px-4 py-16">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -199,6 +186,27 @@ export default function RegisterPage() {
             </Card>
           </motion.div>
         </section>
+      </main>
+    );
+}
+
+export default function RegisterPage() {
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-violet-50/50 via-white to-violet-50/30">
+      <Header />
+      <main className="pt-[88px]">
+        <section className="bg-gradient-to-r from-violet-600 via-purple-600 to-violet-700 text-white py-16">
+          <div className="container mx-auto px-4 text-center">
+            <div className="inline-flex items-center gap-3 bg-white/20 px-5 py-2 rounded-full text-sm font-medium mb-6">
+              <Shield className="h-4 w-4" /> Create Account
+            </div>
+            <h1 className="text-3xl md:text-4xl font-bold mb-3">Get Started</h1>
+            <p className="text-violet-100 text-lg">Create your PremiumPulse account to access insurance plans</p>
+          </div>
+        </section>
+        <Suspense fallback={<div className="h-96 flex items-center justify-center"><div className="animate-spin h-8 w-8 border-4 border-violet-600 border-t-transparent rounded-full" /></div>}>
+          <RegisterForm />
+        </Suspense>
       </main>
       <Footer />
     </div>
