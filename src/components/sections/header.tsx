@@ -64,10 +64,10 @@ export function Header() {
     : "U";
 
   return (
-    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
+    <header className={`fixed top-0 left-0 right-0 z-50 transition-all duration-500 liquid-glass-nav ${
       scrolled
-        ? "bg-white/90 backdrop-blur-xl border-b border-purple-100/80 shadow-md shadow-purple-50"
-        : "bg-white/80 backdrop-blur-sm border-b border-purple-100/50"
+        ? "shadow-[0_8px_40px_rgba(109,40,217,0.14),0_2px_12px_rgba(139,92,246,0.10)]"
+        : "shadow-[0_2px_16px_rgba(109,40,217,0.06)]"
     }`}>
       <div className="container mx-auto px-6 md:px-8">
         <div className="flex items-center justify-between h-20">
@@ -152,7 +152,7 @@ export function Header() {
                       animate={{ opacity: 1, y: 0, scale: 1 }}
                       exit={{ opacity: 0, y: 6, scale: 0.97 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 top-full mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50"
+                      className="absolute right-0 top-full mt-2 w-56 glass-card overflow-hidden z-50"
                     >
                       <div className="px-4 py-3 bg-violet-50 border-b border-violet-100">
                         <p className="text-xs text-gray-500">Signed in as</p>
@@ -222,7 +222,7 @@ export function Header() {
               animate={{ opacity: 1, height: "auto" }}
               exit={{ opacity: 0, height: 0 }}
               transition={{ duration: 0.25, ease: "easeInOut" }}
-              className="xl:hidden overflow-hidden border-t border-purple-100"
+              className="xl:hidden overflow-hidden border-t border-purple-100/50 glass"
             >
               <nav className="flex flex-col gap-6 px-4 py-8">
                 <Link href="/bill-simulator" className="group relative flex items-center justify-center gap-3 bg-gradient-to-br from-rose-500 to-rose-600 text-white px-6 py-4 rounded-xl text-lg font-black hover:from-rose-600 hover:to-rose-700 transition-all shadow-[0_4px_0_0_#9f1239] border border-rose-400/20 overflow-hidden text-center">

@@ -91,17 +91,17 @@ const steps = [
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen">
       <Header />
       
       <main className="pt-20">
-        <section className="relative overflow-hidden py-32 lg:py-48">
+        <section className="relative overflow-hidden py-20 sm:py-28 lg:py-40">
           <div className="absolute inset-0 bg-gradient-to-br from-purple-100 via-white to-violet-100" />
           <div className="absolute top-10 right-10 w-[600px] h-[600px] bg-gradient-to-br from-purple-400/40 to-fuchsia-400/30 rounded-full blur-[150px] animate-pulse" />
           <div className="absolute bottom-10 left-10 w-[700px] h-[700px] bg-gradient-to-tr from-violet-400/30 to-indigo-400/20 rounded-full blur-[150px] animate-pulse" style={{ animationDelay: '1s' }} />
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-gradient-to-r from-purple-300/20 to-pink-300/20 rounded-full blur-[200px]" />
           
-          <div className="container mx-auto px-6 relative">
+          <div className="container mx-auto px-4 sm:px-6 relative">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -115,7 +115,7 @@ export default function HomePage() {
                 className="relative inline-block"
               >
                 <div className="absolute -inset-4 bg-gradient-to-r from-purple-600/20 via-violet-600/20 to-fuchsia-600/20 rounded-3xl blur-2xl" />
-                <h1 className="relative text-6xl lg:text-8xl font-extrabold text-slate-900 mb-8 leading-[1.1] tracking-tight drop-shadow-sm">
+                 <h1 className="relative text-3xl sm:text-5xl lg:text-7xl xl:text-8xl font-extrabold text-slate-900 mb-6 sm:mb-8 leading-[1.1] tracking-tight drop-shadow-sm">
                   Insurance simplified
                   <span className="block bg-gradient-to-r from-purple-600 via-violet-600 to-fuchsia-600 bg-clip-text text-transparent drop-shadow-lg">
                     with AI & ML
@@ -127,7 +127,7 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
-                className="text-xl text-slate-600 font-semibold mb-12 max-w-3xl mx-auto leading-relaxed"
+                className="text-base sm:text-lg lg:text-xl text-slate-600 font-semibold mb-8 sm:mb-12 max-w-3xl mx-auto leading-relaxed px-2"
               >
                 Coverage that understands you — intelligent premiums, full clarity, and protection built around real lives.
               </motion.p>
@@ -136,16 +136,16 @@ export default function HomePage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.6 }}
-                className="flex flex-col sm:flex-row gap-6 justify-center"
+                className="flex flex-col sm:flex-row gap-3 sm:gap-5 justify-center items-center"
               >
                 <Link href="/family-insurance">
-                  <Button size="lg" className="relative bg-gradient-to-r from-purple-600 via-violet-600 to-purple-700 hover:from-purple-700 hover:via-violet-700 hover:to-purple-800 text-white h-16 px-10 text-xl font-bold rounded-2xl transition-all hover:scale-105 shadow-[0_20px_50px_-12px_rgba(147,51,234,0.5)] hover:shadow-[0_25px_60px_-12px_rgba(147,51,234,0.6)]">
+                   <Button size="lg" className="relative bg-gradient-to-r from-purple-600 via-violet-600 to-purple-700 hover:from-purple-700 hover:via-violet-700 hover:to-purple-800 text-white w-full sm:w-auto h-13 sm:h-16 px-7 sm:px-10 text-base sm:text-xl font-bold rounded-2xl transition-all hover:scale-105 shadow-[0_20px_50px_-12px_rgba(147,51,234,0.5)]">
                     <span className="absolute inset-0 rounded-2xl bg-gradient-to-r from-white/20 to-transparent opacity-0 hover:opacity-100 transition-opacity" />
                     Start Your Quote
                     <ArrowRight className="ml-3 h-6 w-6" />
                   </Button>
                 </Link>
-                <Button size="lg" variant="outline" className="bg-white/70 backdrop-blur-md border-2 border-purple-200/50 text-slate-700 hover:bg-white hover:border-purple-300 h-16 px-10 text-xl font-bold rounded-2xl shadow-[0_10px_40px_-15px_rgba(0,0,0,0.1)] hover:shadow-[0_15px_50px_-15px_rgba(147,51,234,0.3)] transition-all">
+                <Button size="lg" variant="outline" className="bg-white/70 backdrop-blur-md border-2 border-purple-200/50 text-slate-700 hover:bg-white hover:border-purple-300 w-full sm:w-auto h-13 sm:h-16 px-7 sm:px-10 text-base sm:text-xl font-bold rounded-2xl transition-all">
                   View Case Studies
                 </Button>
               </motion.div>
@@ -153,16 +153,16 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="py-32 bg-white">
-          <div className="container mx-auto px-6">
+        <section className="py-16 sm:py-24 lg:py-32">
+          <div className="container mx-auto px-4 sm:px-6">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.6 }}
-              className="text-center mb-24"
+              className="text-center mb-10 sm:mb-16 lg:mb-20"
             >
-              <h2 className="text-4xl lg:text-5xl font-bold text-slate-900 mb-6 tracking-tight">
+              <h2 className="text-2xl sm:text-3xl lg:text-5xl font-bold text-slate-900 mb-4 sm:mb-6 tracking-tight">
                 Our Coverage Ecosystem
               </h2>
               <p className="text-slate-500 text-lg max-w-2xl mx-auto leading-relaxed">
@@ -170,7 +170,7 @@ export default function HomePage() {
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-3 gap-12 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-10 max-w-7xl mx-auto">
               {insuranceCategories.map((category, index) => (
                 <motion.div
                   key={category.id}
@@ -180,7 +180,7 @@ export default function HomePage() {
                   transition={{ duration: 0.5, delay: index * 0.1 }}
                 >
                   <Card className={`group relative h-full flex flex-col overflow-hidden border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:shadow-[0_8px_30px_rgb(0,0,0,0.08)] transition-all duration-500 rounded-3xl ${!category.available && 'opacity-75'}`}>
-                    <CardHeader className={`${category.bgColor} pb-10 pt-10 px-8 transition-colors group-hover:bg-opacity-80`}>
+                    <CardHeader className={`${category.bgColor} pb-6 sm:pb-10 pt-6 sm:pt-10 px-5 sm:px-8 transition-colors group-hover:bg-opacity-80`}>
                       <div className={`w-20 h-20 rounded-[2rem] bg-gradient-to-br ${category.color} flex items-center justify-center mb-6 shadow-xl transform transition-transform group-hover:scale-110 group-hover:rotate-3`}>
                         <category.icon className="h-10 w-10 text-white" />
                       </div>
@@ -189,7 +189,7 @@ export default function HomePage() {
                         {category.description}
                       </CardDescription>
                     </CardHeader>
-                    <CardContent className="pt-10 px-8 pb-10 flex-1 flex flex-col">
+                    <CardContent className="pt-6 sm:pt-10 px-5 sm:px-8 pb-6 sm:pb-10 flex-1 flex flex-col">
                       <ul className="space-y-4 mb-10">
                         {category.features.map((feature, i) => (
                           <li key={i} className="flex items-center gap-3 text-slate-600 font-medium">
@@ -219,7 +219,7 @@ export default function HomePage() {
           <section className="py-32 bg-white">
             <div className="container mx-auto px-6">
               <div className="max-w-7xl mx-auto">
-                <div className="grid lg:grid-cols-2 gap-16 items-center">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
                   <motion.div
                     initial={{ opacity: 0, x: -30 }}
                     whileInView={{ opacity: 1, x: 0 }}
@@ -229,7 +229,7 @@ export default function HomePage() {
                     <Badge className="bg-emerald-100 text-emerald-700 hover:bg-emerald-100 border-none px-4 py-1 mb-6">
                       New Feature
                     </Badge>
-                    <h2 className="text-4xl lg:text-6xl font-bold text-slate-900 mb-8 leading-tight tracking-tight">
+                    <h2 className="text-2xl sm:text-4xl lg:text-5xl xl:text-6xl font-bold text-slate-900 mb-5 sm:mb-8 leading-tight tracking-tight">
                       Simulate your <br />
                       <span className="text-emerald-600">Hospital Bill</span> impact
                     </h2>
@@ -342,7 +342,7 @@ export default function HomePage() {
               </p>
             </motion.div>
 
-            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-12 max-w-7xl mx-auto">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 max-w-7xl mx-auto">
               {features.map((feature, index) => (
                 <motion.div
                   key={index}
@@ -350,7 +350,7 @@ export default function HomePage() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="bg-white p-10 rounded-[2.5rem] shadow-sm hover:shadow-md transition-shadow border border-slate-100"
+                  className="p-6 sm:p-8 lg:p-10 rounded-2xl sm:rounded-[2.5rem] shadow-sm hover:shadow-md transition-shadow border border-slate-100/60"
                 >
                   <div className="w-16 h-16 rounded-2xl bg-purple-50 flex items-center justify-center mb-8">
                     <feature.icon className="h-8 w-8 text-purple-600" />
@@ -381,7 +381,7 @@ export default function HomePage() {
             </motion.div>
 
             <div className="max-w-6xl mx-auto relative">
-              <div className="grid md:grid-cols-4 gap-12">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-6 sm:gap-8 lg:gap-10">
                 {steps.map((item, index) => (
                   <motion.div
                     key={item.step}
@@ -413,16 +413,16 @@ export default function HomePage() {
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
               transition={{ duration: 0.8 }}
-              className="max-w-6xl mx-auto bg-gradient-to-br from-purple-600 to-violet-700 rounded-[3rem] p-12 lg:p-24 text-center text-white relative overflow-hidden shadow-2xl"
+              className="max-w-6xl mx-auto bg-gradient-to-br from-purple-600 to-violet-700 rounded-2xl sm:rounded-[3rem] p-8 sm:p-14 lg:p-24 text-center text-white relative overflow-hidden shadow-2xl"
             >
               <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full -mr-48 -mt-48 blur-3xl" />
               <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-400/20 rounded-full -ml-48 -mb-48 blur-3xl" />
               
               <TrendingUp className="h-16 w-16 mx-auto mb-8 text-purple-200" />
-              <h2 className="text-4xl lg:text-6xl font-black mb-8 leading-tight">
+              <h2 className="text-2xl sm:text-4xl lg:text-6xl font-black mb-5 sm:mb-8 leading-tight">
                 Ready to Secure <br />Your Future?
               </h2>
-              <p className="text-purple-100 mb-12 text-xl font-medium max-w-2xl mx-auto leading-relaxed">
+              <p className="text-purple-100 mb-8 sm:mb-12 text-base sm:text-xl font-medium max-w-2xl mx-auto leading-relaxed">
                 Join thousands of families and businesses who trust Premium Pulse for their insurance needs.
               </p>
               <Link href="/family-insurance">

@@ -34,6 +34,12 @@ export default function RootLayout({
           data-debug="true"
           data-custom-data='{"appName": "YourApp", "version": "1.0.0", "greeting": "hi"}'
         />
+        {/* Global glass ambient orbs — fixed, behind everything */}
+        <div aria-hidden="true" className="fixed inset-0 pointer-events-none z-0 overflow-hidden">
+          <div className="absolute top-[-10%] left-[-5%] w-[600px] h-[600px] bg-violet-400/20 rounded-full blur-[100px] animate-float-orb" />
+          <div className="absolute bottom-[-15%] right-[-8%] w-[700px] h-[700px] bg-indigo-400/15 rounded-full blur-[120px] animate-float-orb" style={{animationDelay: "5s", animationDuration: "18s"}} />
+          <div className="absolute top-[40%] left-[55%] w-[400px] h-[400px] bg-pink-400/10 rounded-full blur-[80px] animate-float-orb" style={{animationDelay: "9s", animationDuration: "16s"}} />
+        </div>
         {children}
         <VisualEditsMessenger />
       </body>

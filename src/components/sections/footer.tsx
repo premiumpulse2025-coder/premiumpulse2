@@ -27,10 +27,13 @@ const socials = [
 
 export function Footer() {
   return (
-    <footer className="bg-slate-950 text-white relative overflow-hidden">
-      {/* Subtle glow */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[2px] bg-gradient-to-r from-transparent via-purple-500/60 to-transparent" />
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-32 bg-purple-600/5 blur-3xl" />
+    <footer className="relative overflow-hidden" style={{background: "rgba(10,6,30,0.94)", borderTop: "1px solid rgba(139,92,246,0.2)"}}>
+      {/* Glass ambient orbs */}
+      <div className="absolute top-0 left-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none animate-float-orb" />
+      <div className="absolute bottom-0 right-1/4 w-80 h-80 bg-indigo-600/10 rounded-full blur-3xl pointer-events-none" style={{animationDelay: "4s"}} />
+      {/* Top glow line */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[2px] bg-gradient-to-r from-transparent via-purple-500/70 to-transparent" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-32 bg-purple-600/6 blur-3xl" />
 
       <div className="container mx-auto px-6 py-20 relative">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-16">

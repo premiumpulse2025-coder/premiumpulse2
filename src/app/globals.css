@@ -1,4 +1,4 @@
-/* Updated: 1767936149076 */
+/* Updated: glassmorphism system */
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -118,61 +118,435 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-background text-foreground;
+    @apply text-foreground;
   }
 }
 
-@keyframes shimmer {
-  0% { transform: translateX(-100%); }
-  100% { transform: translateX(100%); }
-}
-
-/* === Global UI Polish === */
+/* ============================================================
+   GLOBAL ANIMATED MESH BACKGROUND
+   ============================================================ */
 
 html {
   scroll-behavior: smooth;
 }
 
-/* Better selection color */
+body {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  background-color: #f3f0ff;
+  background-image:
+    radial-gradient(ellipse 80% 50% at 15% -5%,  rgba(139, 92, 246, 0.20) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 40% at 85% 105%, rgba(99,  102, 241, 0.16) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 55% at 50%  50%, rgba(236, 72, 153, 0.07) 0%, transparent 70%),
+    radial-gradient(ellipse 40% 30% at 70%  20%, rgba(59,  130, 246, 0.08) 0%, transparent 60%);
+  background-attachment: fixed;
+}
+
+/* ============================================================
+   GLASSMORPHISM UTILITY CLASSES
+   ============================================================ */
+
+/* Base glass — white frosted */
+.glass {
+  background: rgba(255, 255, 255, 0.60);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(255, 255, 255, 0.50);
+  box-shadow:
+    0 8px 32px rgba(109, 40, 217, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.90) inset,
+    0 -1px 0 rgba(139, 92, 246, 0.08) inset;
+}
+
+/* Stronger glass card */
+.glass-card {
+  background: rgba(255, 255, 255, 0.70);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid rgba(255, 255, 255, 0.60);
+  box-shadow:
+    0 20px 60px rgba(109, 40, 217, 0.10),
+    0 4px 16px rgba(139, 92, 246, 0.06),
+    0 1px 0 rgba(255, 255, 255, 0.95) inset;
+  border-radius: 1.25rem;
+}
+
+/* Dark glass — for dark sections / footer / hero overlays */
+.glass-dark {
+  background: rgba(15, 10, 40, 0.55);
+  backdrop-filter: blur(24px) saturate(160%);
+  -webkit-backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  box-shadow:
+    0 20px 60px rgba(0, 0, 0, 0.35),
+    0 1px 0 rgba(255, 255, 255, 0.08) inset;
+}
+
+/* Hero/section glass overlay */
+.glass-hero {
+  background: rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(16px) saturate(140%);
+  -webkit-backdrop-filter: blur(16px) saturate(140%);
+  border: 1px solid rgba(255, 255, 255, 0.20);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.10);
+}
+
+/* ============================================================
+   LIQUID GLASS NAVBAR
+   ============================================================ */
+.liquid-glass-nav {
+  /* Heavy multi-pass liquid refraction */
+  background:
+    linear-gradient(
+      135deg,
+      rgba(255, 255, 255, 0.82) 0%,
+      rgba(255, 255, 255, 0.65) 40%,
+      rgba(245, 240, 255, 0.78) 70%,
+      rgba(255, 255, 255, 0.80) 100%
+    );
+  backdrop-filter: blur(40px) saturate(280%) brightness(1.08) contrast(1.04);
+  -webkit-backdrop-filter: blur(40px) saturate(280%) brightness(1.08) contrast(1.04);
+  border-bottom: 1px solid transparent;
+  /* Layered chromatic shadow — creates depth + color fringing */
+  box-shadow:
+    /* Top inner white highlight */
+    0 1px 0 rgba(255, 255, 255, 0.98) inset,
+    /* Inner blue-violet chromatic fringe */
+    0 -1px 0 rgba(139, 92, 246, 0.12) inset,
+    /* Outer violet glow */
+    0 8px 32px rgba(109, 40, 217, 0.10),
+    /* Deep purple depth shadow */
+    0 2px 8px rgba(139, 92, 246, 0.08),
+    /* Pink chromatic right-edge */
+    2px 0 12px rgba(236, 72, 153, 0.04),
+    /* Blue chromatic left-edge */
+    -2px 0 12px rgba(59, 130, 246, 0.04);
+  /* Iridescent border via background-clip trick */
+  border-image: none;
+  position: relative;
+  isolation: isolate;
+}
+
+/* Iridescent rainbow bottom border line */
+.liquid-glass-nav::after {
+  content: "";
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  height: 1.5px;
+  background: linear-gradient(
+    90deg,
+    rgba(139, 92, 246, 0)    0%,
+    rgba(139, 92, 246, 0.55) 12%,
+    rgba(99,  102, 241, 0.6) 25%,
+    rgba(59,  130, 246, 0.5) 38%,
+    rgba(16,  185, 129, 0.4) 50%,
+    rgba(236, 72,  153, 0.5) 62%,
+    rgba(139, 92,  246, 0.6) 75%,
+    rgba(99,  102, 241, 0.55)88%,
+    rgba(139, 92,  246, 0)   100%
+  );
+  background-size: 200% 100%;
+  animation: liquid-border-shimmer 4s linear infinite;
+  z-index: 2;
+}
+
+/* Sweeping liquid shimmer wave across the bar */
+.liquid-glass-nav::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    105deg,
+    transparent      0%,
+    transparent      35%,
+    rgba(255,255,255,0.22) 50%,
+    transparent      65%,
+    transparent      100%
+  );
+  background-size: 300% 100%;
+  animation: liquid-shimmer-wave 6s ease-in-out infinite;
+  pointer-events: none;
+  z-index: 1;
+}
+
+@keyframes liquid-border-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@keyframes liquid-shimmer-wave {
+  0%   { background-position: 200% 0; opacity: 0.6; }
+  50%  { background-position: -50%  0; opacity: 1;   }
+  100% { background-position: -200% 0; opacity: 0.6; }
+}
+
+
+
+/* Pill / badge glass */
+.glass-badge {
+  background: rgba(255, 255, 255, 0.50);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.70);
+  box-shadow: 0 2px 8px rgba(109, 40, 217, 0.08);
+}
+
+/* Tinted glass variants */
+.glass-violet {
+  background: rgba(139, 92, 246, 0.08);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(139, 92, 246, 0.20);
+  box-shadow: 0 8px 32px rgba(109, 40, 217, 0.08);
+}
+
+.glass-emerald {
+  background: rgba(16, 185, 129, 0.07);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(16, 185, 129, 0.18);
+  box-shadow: 0 8px 32px rgba(5, 150, 105, 0.07);
+}
+
+.glass-blue {
+  background: rgba(59, 130, 246, 0.07);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(59, 130, 246, 0.18);
+  box-shadow: 0 8px 32px rgba(37, 99, 235, 0.07);
+}
+
+/* Glass hover lift effect */
+.glass-hover {
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.glass-hover:hover {
+  transform: translateY(-3px);
+  box-shadow:
+    0 28px 64px rgba(109, 40, 217, 0.14),
+    0 8px 20px rgba(139, 92, 246, 0.08),
+    0 1px 0 rgba(255, 255, 255, 0.95) inset !important;
+}
+
+/* ============================================================
+   SHADCN COMPONENT GLASS OVERRIDES (site-wide, no page edits)
+   ============================================================ */
+
+/* Cards */
+[data-slot="card"] {
+  background: rgba(255, 255, 255, 0.70) !important;
+  backdrop-filter: blur(24px) saturate(180%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(180%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.55) !important;
+  box-shadow:
+    0 16px 48px rgba(109, 40, 217, 0.08),
+    0 4px 12px rgba(139, 92, 246, 0.05),
+    0 1px 0 rgba(255, 255, 255, 0.95) inset !important;
+}
+
+/* Popover / dropdown menus */
+[data-slot="popover-content"],
+[data-radix-popper-content-wrapper] > div {
+  background: rgba(255, 255, 255, 0.92) !important;
+  backdrop-filter: blur(24px) saturate(200%) !important;
+  -webkit-backdrop-filter: blur(24px) saturate(200%) !important;
+  border: 1px solid rgba(255, 255, 255, 0.70) !important;
+  box-shadow: 0 20px 60px rgba(109, 40, 217, 0.12) !important;
+}
+
+/* Inputs — handled by Input component, this is a safety fallback for raw inputs */
+[data-slot="input"] {
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Buttons — glass shimmer top-edge highlight */
+[data-slot="button"] {
+  position: relative;
+  overflow: hidden;
+}
+[data-slot="button"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(to bottom, rgba(255,255,255,0.18) 0%, transparent 60%);
+  pointer-events: none;
+  z-index: 1;
+}
+/* OTP slots — glass style */
+[data-slot="input-otp-slot"] {
+  background: rgba(255, 255, 255, 0.60) !important;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.60) !important;
+  box-shadow: 0 2px 8px rgba(109, 40, 217, 0.07), 0 1px 0 rgba(255,255,255,0.9) inset;
+  transition: background 0.2s, box-shadow 0.2s;
+}
+[data-slot="input-otp-slot"][data-active] {
+  background: rgba(255, 255, 255, 0.88) !important;
+  border-color: rgba(139, 92, 246, 0.40) !important;
+  box-shadow: 0 0 0 3px rgba(139,92,246,0.14), 0 4px 16px rgba(109,40,217,0.10) !important;
+}
+
+
+/* ============================================================
+   FOOTER GLASS OVERRIDE
+   ============================================================ */
+
+footer {
+  background: rgba(10, 6, 30, 0.92) !important;
+  backdrop-filter: blur(32px) saturate(150%) !important;
+  -webkit-backdrop-filter: blur(32px) saturate(150%) !important;
+  border-top: 1px solid rgba(139, 92, 246, 0.18) !important;
+}
+
+/* ============================================================
+   ANIMATIONS
+   ============================================================ */
+
+@keyframes shimmer {
+  0%   { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
+}
+
+@keyframes float-orb {
+  0%,  100% { transform: translate(0,    0)    scale(1);    opacity: 0.6; }
+  33%        { transform: translate(30px, -20px) scale(1.05); opacity: 0.8; }
+  66%        { transform: translate(-20px, 15px) scale(0.97); opacity: 0.5; }
+}
+
+.animate-float-orb {
+  animation: float-orb 14s ease-in-out infinite;
+}
+
+/* ============================================================
+   MISC POLISH
+   ============================================================ */
+
 ::selection {
   background: rgba(147, 51, 234, 0.2);
   color: inherit;
 }
 
-/* Smoother focus rings */
 :focus-visible {
   outline: 2px solid rgba(147, 51, 234, 0.6);
   outline-offset: 2px;
   border-radius: 4px;
 }
 
-/* Consistent transitions on interactive elements */
 a, button, [role="button"] {
   transition-property: color, background-color, border-color, box-shadow, opacity, transform;
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
   transition-duration: 150ms;
 }
 
-/* Prevent layout shift during font load */
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(147, 51, 234, 0.25); border-radius: 999px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(147, 51, 234, 0.45); }
+
+/* ============================================================
+   GLOBAL RESPONSIVE UTILITIES
+   ============================================================ */
+
+/* Fluid container — consistent horizontal padding at every breakpoint */
+.container {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 1rem;    /* 16px mobile */
+  padding-right: 1rem;
+}
+@media (min-width: 480px)  { .container { padding-left: 1.25rem; padding-right: 1.25rem; } }
+@media (min-width: 640px)  { .container { padding-left: 1.5rem;  padding-right: 1.5rem;  } }
+@media (min-width: 1024px) { .container { padding-left: 2rem;    padding-right: 2rem;    } }
+@media (min-width: 1280px) { .container { padding-left: 2.5rem;  padding-right: 2.5rem;  } }
+
+/* Fluid section vertical rhythm */
+.section-py {
+  padding-top: 4rem;
+  padding-bottom: 4rem;
+}
+@media (min-width: 640px)  { .section-py { padding-top: 5rem;  padding-bottom: 5rem;  } }
+@media (min-width: 1024px) { .section-py { padding-top: 7rem;  padding-bottom: 7rem;  } }
+@media (min-width: 1280px) { .section-py { padding-top: 9rem;  padding-bottom: 9rem;  } }
+
+/* Fluid hero heading — clamp-based for smooth scaling */
+.text-hero {
+  font-size: clamp(2rem, 6vw, 5rem);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
 }
 
-/* Custom scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Fluid section heading */
+.text-section-title {
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
 }
-::-webkit-scrollbar-track {
-  background: transparent;
+
+/* Readable body text max-width */
+.prose-readable {
+  max-width: 68ch;
 }
-::-webkit-scrollbar-thumb {
-  background: rgba(147, 51, 234, 0.25);
-  border-radius: 999px;
+
+/* Prevent horizontal overflow globally */
+*, *::before, *::after {
+  box-sizing: border-box;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(147, 51, 234, 0.45);
+
+html, body {
+  overflow-x: hidden;
+  max-width: 100vw;
+}
+
+/* Images and media are responsive by default */
+img, video, iframe, embed, object {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Touch targets — minimum 44px hit area on mobile */
+@media (max-width: 640px) {
+  button, [role="button"], a {
+    min-height: 44px;
+  }
+  /* Stack any side-by-side button groups on mobile */
+  .btn-group-mobile {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    gap: 0.75rem;
+  }
+  .btn-group-mobile > * {
+    width: 100%;
+  }
+}
+
+/* Payment / form pages — single column on mobile */
+@media (max-width: 768px) {
+  /* Force payment step cards to full-width */
+  .payment-card-inner {
+    padding: 1.25rem !important;
+  }
+  /* Tighter section padding on mobile */
+  section {
+    padding-top: 3rem;
+    padding-bottom: 3rem;
+  }
+}
+
+/* Cards never overflow their container */
+[data-slot="card"] {
+  min-width: 0;
+  overflow: hidden;
+}
+
+/* Prevent long words breaking layout */
+p, li, h1, h2, h3, h4, h5, h6 {
+  overflow-wrap: break-word;
+  word-break: break-word;
 }
 

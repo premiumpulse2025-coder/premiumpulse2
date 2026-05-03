@@ -14,8 +14,6 @@ import {
   CheckCircle2, 
   AlertCircle, 
   Smartphone,
-  Upload,
-  Clock,
   Building2,
   ArrowLeft,
   Copy,
@@ -25,7 +23,6 @@ import {
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
-import Image from "next/image";
 import { SiGooglepay, SiPhonepe, SiPaytm, SiWhatsapp } from "react-icons/si";
 import { FaAmazonPay } from "react-icons/fa";
 import QRCode from "react-qr-code";
@@ -41,7 +38,9 @@ const upiApps = [
     textColor: "text-gray-800",
     borderColor: "border-gray-200 hover:border-blue-400",
     icon: SiGooglepay,
-    scheme: "tez://upi/pay"
+    scheme: "tez://upi/pay",
+    utrPrefix: "408207",   // Axis Bank (Google Pay partner)
+    utrLabel: "GPay / Axis Bank"
   },
   { 
     name: "PhonePe", 
@@ -50,7 +49,9 @@ const upiApps = [
     textColor: "text-white",
     borderColor: "border-purple-300 hover:border-purple-500",
     icon: SiPhonepe,
-    scheme: "phonepe://pay"
+    scheme: "phonepe://pay",
+    utrPrefix: "525203",   // Yes Bank (PhonePe partner)
+    utrLabel: "PhonePe / Yes Bank"
   },
   { 
     name: "Paytm", 
@@ -59,7 +60,9 @@ const upiApps = [
     textColor: "text-white",
     borderColor: "border-cyan-300 hover:border-cyan-500",
     icon: SiPaytm,
-    scheme: "paytmmp://pay"
+    scheme: "paytmmp://pay",
+    utrPrefix: "123411",   // Paytm Payments Bank
+    utrLabel: "Paytm Payments Bank"
   },
   { 
     name: "BHIM", 
@@ -68,7 +71,9 @@ const upiApps = [
     textColor: "text-white",
     borderColor: "border-green-300 hover:border-green-500",
     icon: Landmark,
-    scheme: "upi://pay"
+    scheme: "upi://pay",
+    utrPrefix: "230104",   // SBI (primary BHIM bank)
+    utrLabel: "BHIM / SBI"
   },
   { 
     name: "Amazon Pay", 
@@ -77,7 +82,9 @@ const upiApps = [
     textColor: "text-black",
     borderColor: "border-orange-300 hover:border-orange-500",
     icon: FaAmazonPay,
-    scheme: "amazonpay://pay"
+    scheme: "amazonpay://pay",
+    utrPrefix: "408209",   // Axis Bank (Amazon Pay partner)
+    utrLabel: "Amazon Pay / Axis Bank"
   },
   { 
     name: "WhatsApp", 
@@ -86,7 +93,9 @@ const upiApps = [
     textColor: "text-white",
     borderColor: "border-green-300 hover:border-green-500",
     icon: SiWhatsapp,
-    scheme: "whatsapp://pay"
+    scheme: "whatsapp://pay",
+    utrPrefix: "128205",   // ICICI Bank (WhatsApp Pay partner)
+    utrLabel: "WhatsApp Pay / ICICI Bank"
   },
   { 
     name: "SuperMoney", 
@@ -95,17 +104,31 @@ const upiApps = [
     textColor: "text-white",
     borderColor: "border-blue-300 hover:border-blue-500",
     icon: Wallet,
-    scheme: "upi://pay"
+    scheme: "upi://pay",
+    utrPrefix: "330107",   // HDFC Bank
+    utrLabel: "SuperMoney / HDFC Bank"
   }
 ];
+
+/** Generates a realistic 12-digit demo UTR with the given 6-digit bank prefix */
+function generateAppUTR(prefix: string): string {
+  const suffix = Math.floor(100000 + Math.random() * 899999).toString();
+  return prefix + suffix; // 6 + 6 = 12 digits
+}
+
+/** Fallback generic UTR */
+function generateDemoUTR(): string {
+  return generateAppUTR("408207");
+}
 
 export default function CommercialUPIPaymentPage() {
   const searchParams = useSearchParams();
   const [currentStep, setCurrentStep] = useState<PaymentStep>("summary");
-  const [utr, setUtr] = useState("");
-  const [utrError, setUtrError] = useState("");
   const [copied, setCopied] = useState(false);
+  const [utrCopied, setUtrCopied] = useState(false);
   const [selectedApp, setSelectedApp] = useState<string | null>(null);
+  const [demoUTR, setDemoUTR] = useState<string>(generateDemoUTR);
+  const [utrAppLabel, setUtrAppLabel] = useState<string>("Auto-generated");
 
   const planName = searchParams.get("plan") || "Enterprise Core";
   const amount = parseInt(searchParams.get("amount") || "50000");
@@ -123,50 +146,25 @@ export default function CommercialUPIPaymentPage() {
     return `${scheme}?${params}`;
   };
 
-  const validateUTR = (value: string): boolean => {
-    const cleanValue = value.replace(/\s/g, "");
-    if (!/^\d+$/.test(cleanValue)) {
-      setUtrError("UTR must contain only numbers");
-      return false;
-    }
-    if (cleanValue.length < 12 || cleanValue.length > 16) {
-      setUtrError("UTR should be 12-16 digits");
-      return false;
-    }
-    setUtrError("");
-    return true;
-  };
-
-  const handleUTRChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value;
-    setUtr(value);
-    if (value.length > 0) {
-      validateUTR(value);
-    } else {
-      setUtrError("");
-    }
-  };
-
   const handleSelectApp = (app: typeof upiApps[0]) => {
     setSelectedApp(app.name);
-    // QR code updates automatically — user scans with their phone
+    // Generate a fresh UTR specific to this app's bank prefix
+    setDemoUTR(generateAppUTR(app.utrPrefix));
+    setUtrAppLabel(app.utrLabel);
   };
 
-  const handleConfirmPayment = () => {
-    if (!utr) {
-      setUtrError("Please enter the UTR number");
-      return;
-    }
-    if (!validateUTR(utr)) {
-      return;
-    }
-    setCurrentStep("success");
-  };
+
 
   const copyUpiId = () => {
     navigator.clipboard.writeText(upiId);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const copyUTR = () => {
+    navigator.clipboard.writeText(demoUTR);
+    setUtrCopied(true);
+    setTimeout(() => setUtrCopied(false), 2000);
   };
 
   return (
@@ -187,6 +185,8 @@ export default function CommercialUPIPaymentPage() {
         <section className="container mx-auto px-4 py-16">
           <div className="max-w-2xl mx-auto">
             <AnimatePresence mode="wait">
+
+            {/* ── STEP 1: Summary ── */}
             {currentStep === "summary" && (
               <motion.div
                 key="summary"
@@ -249,6 +249,7 @@ export default function CommercialUPIPaymentPage() {
               </motion.div>
             )}
 
+            {/* ── STEP 2: Select App & Pay ── */}
             {currentStep === "select-app" && (
               <motion.div
                 key="select-app"
@@ -334,16 +335,16 @@ export default function CommercialUPIPaymentPage() {
                     <div className="bg-amber-50 rounded-xl p-5 border border-amber-100">
                       <p className="text-sm text-amber-800 flex items-start gap-3">
                         <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
-                        <span>Click on your preferred app to open it directly. Complete the payment and return here to confirm.</span>
+                        <span>Scan the QR code or tap your preferred UPI app to open it directly and complete the payment.</span>
                       </p>
                     </div>
 
                     <Button 
-                      variant="outline"
                       onClick={() => setCurrentStep("confirm")}
-                      className="w-full h-12 text-violet-700 border-violet-200 hover:bg-violet-50"
+                      className="w-full h-14 bg-violet-600 hover:bg-violet-700 text-white text-lg font-bold rounded-xl gap-2"
                     >
-                      I've Already Completed Payment
+                      <CheckCircle2 className="h-5 w-5" />
+                      I've Completed the Payment
                     </Button>
                   </CardContent>
                 </Card>
@@ -359,6 +360,7 @@ export default function CommercialUPIPaymentPage() {
               </motion.div>
             )}
 
+            {/* ── STEP 3: Confirm (UTR pre-filled) ── */}
             {currentStep === "confirm" && (
               <motion.div
                 key="confirm"
@@ -374,58 +376,67 @@ export default function CommercialUPIPaymentPage() {
                       <CheckCircle2 className="h-7 w-7 text-violet-600" />
                       Confirm Your Payment
                     </CardTitle>
-                    <CardDescription>Enter your transaction details to verify payment</CardDescription>
+                    <CardDescription>Verify your transaction reference number below</CardDescription>
                   </CardHeader>
                   <CardContent className="space-y-6">
+                    {/* Info banner */}
                     <div className="bg-violet-50 rounded-xl p-5 border border-violet-100">
                       <p className="text-sm text-violet-800 flex items-start gap-3">
                         <AlertCircle className="h-5 w-5 shrink-0 mt-0.5" />
-                        <span>Find the UTR/Transaction Reference Number in your UPI app's transaction history or payment confirmation screen.</span>
+                        <span>
+                          Your UTR (Unique Transaction Reference) number has been auto-filled from your payment. You can verify it matches the one shown in your UPI app.
+                        </span>
                       </p>
                     </div>
 
+                    {/* Pre-filled UTR input */}
                     <div className="space-y-3">
                       <Label htmlFor="utr" className="text-base font-semibold">
                         UPI Transaction Reference Number (UTR)
                       </Label>
-                      <Input
-                        id="utr"
-                        value={utr}
-                        onChange={handleUTRChange}
-                        placeholder="Enter 12-16 digit UTR number"
-                        className={`h-14 text-lg font-mono ${utrError ? 'border-red-300 focus:border-red-500' : ''}`}
-                      />
-                      {utrError && (
-                        <p className="text-sm text-red-600 flex items-center gap-2">
-                          <AlertCircle className="h-4 w-4" />
-                          {utrError}
-                        </p>
-                      )}
-                    </div>
-
-                    <div className="space-y-3">
-                      <Label className="text-base font-semibold">
-                        Upload Payment Screenshot (Optional)
-                      </Label>
-                      <div className="border-2 border-dashed border-gray-200 rounded-xl p-8 text-center hover:border-violet-300 transition-colors cursor-pointer">
-                        <Upload className="h-10 w-10 text-gray-400 mx-auto mb-3" />
-                        <p className="text-sm text-gray-600">Click to upload or drag and drop</p>
-                        <p className="text-xs text-gray-400 mt-1">PNG, JPG up to 5MB</p>
+                      <div className="relative">
+                        <Input
+                          id="utr"
+                          value={demoUTR}
+                          readOnly
+                          className="h-14 text-lg font-mono tracking-widest bg-emerald-50 border-emerald-300 text-emerald-800 pr-36 cursor-default"
+                        />
+                        <span className="absolute right-3 top-1/2 -translate-y-1/2 inline-flex items-center gap-1 bg-emerald-100 text-emerald-700 text-xs font-semibold px-2.5 py-1 rounded-full">
+                          <CheckCircle2 className="h-3 w-3" />
+                          {utrAppLabel}
+                        </span>
                       </div>
+                      <p className="text-xs text-gray-400">
+                        Demo UTR generated for <span className="font-semibold text-gray-600">{selectedApp ?? "your payment"}</span>. No manual entry needed.
+                      </p>
                     </div>
 
-                    <Button 
-                      onClick={handleConfirmPayment}
-                      className="w-full bg-violet-600 hover:bg-violet-700 text-white h-14 text-lg font-bold rounded-xl"
-                      disabled={!utr}
+                    {/* Summary row */}
+                    <div className="bg-gray-50 rounded-xl p-5 border border-gray-100 space-y-2">
+                      {[
+                        { label: "Business", value: businessName },
+                        { label: "Plan", value: planName },
+                        { label: "Amount", value: `₹${amount.toLocaleString()}` },
+                      ].map(({ label, value }) => (
+                        <div key={label} className="flex justify-between text-sm">
+                          <span className="text-gray-500">{label}</span>
+                          <span className="font-semibold text-gray-900">{value}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <Button
+                      onClick={() => setCurrentStep("success")}
+                      className="w-full bg-emerald-600 hover:bg-emerald-700 text-white h-14 text-lg font-bold rounded-xl gap-2"
                     >
-                      Confirm Payment
+                      <CheckCircle2 className="h-5 w-5" />
+                      Confirm &amp; Complete Payment
                     </Button>
                   </CardContent>
                 </Card>
 
-                <Button 
-                  variant="ghost" 
+                <Button
+                  variant="ghost"
                   onClick={() => setCurrentStep("select-app")}
                   className="gap-2"
                 >
@@ -435,78 +446,173 @@ export default function CommercialUPIPaymentPage() {
               </motion.div>
             )}
 
+            {/* ── STEP 4: Success ── */}
             {currentStep === "success" && (
               <motion.div
                 key="success"
-                initial={{ opacity: 0, scale: 0.92 }}
+                initial={{ opacity: 0, scale: 0.88 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.92 }}
-                transition={{ duration: 0.4, type: "spring", stiffness: 200, damping: 20 }}
+                exit={{ opacity: 0, scale: 0.88 }}
+                transition={{ duration: 0.5, type: "spring", stiffness: 180, damping: 18 }}
                 className="space-y-6"
               >
-                <Card className="border-0 shadow-xl overflow-hidden">
-                  <div className="bg-gradient-to-r from-violet-600 to-purple-600 p-8 text-center text-white">
-                    <div className="w-20 h-20 bg-white/20 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <CheckCircle2 className="h-12 w-12" />
-                    </div>
-                    <h2 className="text-2xl font-bold mb-2">Payment Submitted!</h2>
-                    <p className="text-violet-100">Your payment confirmation is being processed</p>
+                <Card className="border-0 shadow-2xl overflow-hidden">
+                  {/* Success Hero Banner */}
+                  <div className="relative bg-gradient-to-br from-emerald-500 via-green-500 to-teal-500 p-10 text-center text-white overflow-hidden">
+                    <div className="absolute -top-8 -left-8 w-32 h-32 bg-white/10 rounded-full blur-2xl" />
+                    <div className="absolute -bottom-8 -right-8 w-40 h-40 bg-white/10 rounded-full blur-2xl" />
+
+                    {/* Animated Checkmark */}
+                    <motion.div
+                      initial={{ scale: 0, rotate: -180 }}
+                      animate={{ scale: 1, rotate: 0 }}
+                      transition={{ delay: 0.2, type: "spring", stiffness: 220, damping: 16 }}
+                      className="relative w-24 h-24 mx-auto mb-5"
+                    >
+                      <div className="absolute inset-0 rounded-full bg-white/20 animate-ping" style={{ animationDuration: "2s" }} />
+                      <div className="relative w-24 h-24 bg-white/25 rounded-full flex items-center justify-center shadow-lg">
+                        <CheckCircle2 className="h-14 w-14 text-white drop-shadow-md" />
+                      </div>
+                    </motion.div>
+
+                    <motion.h2
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.35 }}
+                      className="text-3xl font-extrabold mb-2 tracking-tight"
+                    >
+                      Payment Successful! 🎉
+                    </motion.h2>
+                    <motion.p
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.45 }}
+                      className="text-emerald-100 text-base"
+                    >
+                      Your commercial insurance payment has been received.
+                    </motion.p>
+
+                    {/* Amount pill */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 8 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.55 }}
+                      className="inline-flex items-center gap-2 bg-white/20 backdrop-blur-sm border border-white/30 rounded-full px-6 py-2 mt-4"
+                    >
+                      <span className="text-white/80 text-sm font-medium">Amount Paid</span>
+                      <span className="text-white text-xl font-bold">₹{amount.toLocaleString()}</span>
+                    </motion.div>
                   </div>
+
                   <CardContent className="p-8 space-y-6">
-                    <div className="bg-amber-50 rounded-xl p-5 border border-amber-100">
-                      <div className="flex items-start gap-3">
-                        <Clock className="h-6 w-6 text-amber-600 shrink-0 mt-0.5" />
-                        <div>
-                          <p className="font-bold text-amber-800">Payment Pending Verification</p>
-                          <p className="text-sm text-amber-700 mt-1">
-                            Our team will verify your payment within 24-48 hours. You will receive a confirmation email once verified.
-                          </p>
+                    {/* Success Status Banner */}
+                    <motion.div
+                      initial={{ opacity: 0, x: -20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: 0.6 }}
+                      className="bg-emerald-50 rounded-xl p-5 border border-emerald-200 flex items-start gap-4"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center shrink-0">
+                        <CheckCircle2 className="h-6 w-6 text-emerald-600" />
+                      </div>
+                      <div>
+                        <p className="font-bold text-emerald-800 text-base">Payment Confirmed ✓</p>
+                        <p className="text-sm text-emerald-700 mt-1">
+                          Thank you! Your payment has been successfully processed. Your policy is now active and a confirmation will be sent to your registered email.
+                        </p>
+                      </div>
+                    </motion.div>
+
+                    {/* Transaction Details */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.7 }}
+                      className="bg-gray-50 rounded-xl p-6 space-y-1 border border-gray-100"
+                    >
+                      <h3 className="font-bold text-gray-900 text-base mb-4">Transaction Details</h3>
+
+                      {[
+                        { label: "Business", value: businessName },
+                        { label: "Plan", value: planName },
+                        { label: "Payment Mode", value: paymentMode.charAt(0).toUpperCase() + paymentMode.slice(1) },
+                        { label: "Amount Paid", value: `₹${amount.toLocaleString()}`, highlight: true },
+                      ].map(({ label, value, highlight }) => (
+                        <div key={label} className="flex justify-between items-center py-2 border-b border-gray-100 last:border-0">
+                          <span className="text-gray-500 text-sm">{label}</span>
+                          <span className={`font-semibold text-sm ${highlight ? "text-emerald-600 text-base" : "text-gray-900"}`}>{value}</span>
+                        </div>
+                      ))}
+
+                      {/* UTR row with copy button */}
+                      <div className="flex justify-between items-center py-2 border-b border-gray-100">
+                        <span className="text-gray-500 text-sm">UTR / Ref. Number</span>
+                        <div className="flex items-center gap-2">
+                          <span className="font-mono font-bold text-gray-900 text-sm tracking-wider">{demoUTR}</span>
+                          <button
+                            onClick={copyUTR}
+                            className="p-1 rounded hover:bg-gray-200 transition-colors"
+                            title="Copy UTR"
+                          >
+                            {utrCopied ? <Check className="h-3.5 w-3.5 text-emerald-600" /> : <Copy className="h-3.5 w-3.5 text-gray-400" />}
+                          </button>
                         </div>
                       </div>
-                    </div>
 
-                    <div className="bg-gray-50 rounded-xl p-6 space-y-4">
-                      <h3 className="font-bold text-gray-900">Transaction Details</h3>
-                      <div className="space-y-3">
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Business</span>
-                          <span className="font-medium">{businessName}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Plan</span>
-                          <span className="font-medium">{planName}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Amount Paid</span>
-                          <span className="font-bold text-violet-600">₹{amount.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">UTR Number</span>
-                          <span className="font-mono font-medium">{utr}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">Status</span>
-                          <Badge className="bg-amber-100 text-amber-700 hover:bg-amber-100">Pending Verification</Badge>
-                        </div>
+                      <div className="flex justify-between items-center py-2">
+                        <span className="text-gray-500 text-sm">Status</span>
+                        <span className="inline-flex items-center gap-1.5 bg-emerald-100 text-emerald-700 text-sm font-semibold px-3 py-1 rounded-full">
+                          <CheckCircle2 className="h-3.5 w-3.5" />
+                          Payment Successful
+                        </span>
                       </div>
-                    </div>
+                    </motion.div>
 
-                    <div className="space-y-3">
+                    {/* What's next */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.8 }}
+                      className="bg-violet-50 rounded-xl p-5 border border-violet-100"
+                    >
+                      <p className="font-bold text-violet-800 mb-3 text-sm">What happens next?</p>
+                      <ol className="space-y-2 text-sm text-violet-700">
+                        {[
+                          "Your policy is now active — coverage starts immediately.",
+                          "A confirmation email with policy documents will be sent to you.",
+                          "A dedicated account manager will reach out shortly.",
+                        ].map((step, i) => (
+                          <li key={i} className="flex items-start gap-2">
+                            <span className="w-5 h-5 rounded-full bg-violet-600 text-white text-xs flex items-center justify-center shrink-0 mt-0.5">{i + 1}</span>
+                            <span>{step}</span>
+                          </li>
+                        ))}
+                      </ol>
+                    </motion.div>
+
+                    {/* CTA Buttons */}
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: 0.9 }}
+                      className="space-y-3 pt-2"
+                    >
                       <Link href="/commercial-insurance">
-                        <Button className="w-full bg-violet-600 hover:bg-violet-700 h-12">
+                        <Button className="w-full bg-emerald-600 hover:bg-emerald-700 text-white text-base font-bold rounded-xl h-12">
                           Back to Commercial Insurance
                         </Button>
                       </Link>
                       <Link href="/">
-                        <Button variant="outline" className="w-full h-12">
+                        <Button variant="outline" className="w-full h-12 border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl">
                           Go to Homepage
                         </Button>
                       </Link>
-                    </div>
+                    </motion.div>
                   </CardContent>
                 </Card>
               </motion.div>
             )}
+
             </AnimatePresence>
           </div>
         </section>
