@@ -11,6 +11,7 @@ import {
   Camera, Upload, IdCard, MapPin, ArrowRight, ArrowLeft, Sparkles, Lock
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { InputOTP, InputOTPGroup, InputOTPSlot, InputOTPSeparator } from "@/components/ui/input-otp";
 
 interface KycGateProps {
   insuranceType: "individual" | "family" | "commercial";
@@ -18,9 +19,9 @@ interface KycGateProps {
   accentColor?: string;
 }
 
-type KycStep = "intro" | "personal" | "identity" | "address" | "documents" | "processing" | "success";
+type KycStep = "intro" | "personal" | "otp" | "identity" | "address" | "documents" | "processing" | "success";
 
-const STEPS: KycStep[] = ["intro", "personal", "identity", "address", "documents", "processing", "success"];
+const STEPS: KycStep[] = ["intro", "personal", "otp", "identity", "address", "documents", "processing", "success"];
 
 const INDIAN_STATES = [
   "Andhra Pradesh", "Maharashtra", "Karnataka", "Tamil Nadu", "Delhi",
@@ -34,6 +35,7 @@ export function KycGate({ insuranceType, onVerified, accentColor = "violet" }: K
   const [submitting, setSubmitting] = useState(false);
 
   const [personal, setPersonal] = useState({ fullName: "", dob: "", gender: "male", phone: "" });
+  const [otpValue, setOtpValue] = useState("");
   const [identity, setIdentity] = useState({ panNumber: "", aadhaarNumber: "" });
   const [address, setAddress] = useState({ address: "", city: "", state: "", pincode: "" });
   const [docStatus, setDocStatus] = useState({
@@ -95,7 +97,7 @@ export function KycGate({ insuranceType, onVerified, accentColor = "violet" }: K
   };
 
   const stepIndex = STEPS.indexOf(currentStep);
-  const progress = currentStep === "processing" || currentStep === "success" ? 100 : Math.round((stepIndex / 5) * 100);
+  const progress = currentStep === "processing" || currentStep === "success" ? 100 : Math.round((stepIndex / 6) * 100);
 
   return (
     <div className="min-h-[60vh] flex flex-col items-center justify-center py-12 px-4">
@@ -227,12 +229,71 @@ export function KycGate({ insuranceType, onVerified, accentColor = "violet" }: K
                     <Button variant="outline" onClick={() => setCurrentStep("intro")} className="gap-2"><ArrowLeft className="h-4 w-4" /> Back</Button>
                     <Button
                       onClick={() => {
-                        if (!personal.fullName || !personal.dob) { setError("Please fill all required fields"); return; }
-                        setError(""); setCurrentStep("identity");
+                        if (!personal.fullName || !personal.dob || !personal.phone) { setError("Please fill all required fields"); return; }
+                        setError(""); setCurrentStep("otp");
                       }}
                       className={`${accent.bg} ${accent.hover} text-white gap-2`}
                     >
                       Next <ArrowRight className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  {error && <p className="text-sm text-red-600 flex gap-2"><AlertCircle className="h-4 w-4" />{error}</p>}
+                </CardContent>
+              </Card>
+            </motion.div>
+          )}
+
+          {/* OTP */}
+          {currentStep === "otp" && (
+            <motion.div key="otp" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }}>
+              <Card className="border-0 shadow-2xl">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2">
+                    <Lock className={`h-6 w-6 ${accent.text}`} /> Phone Verification
+                  </CardTitle>
+                  <CardDescription>Enter the 6-digit OTP sent to {personal.phone}</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-6">
+                  <div className="flex flex-col items-center space-y-4 py-4">
+                    <InputOTP 
+                      maxLength={6} 
+                      value={otpValue}
+                      onChange={(val) => setOtpValue(val)}
+                    >
+                      <InputOTPGroup>
+                        <InputOTPSlot index={0} />
+                        <InputOTPSlot index={1} />
+                        <InputOTPSlot index={2} />
+                      </InputOTPGroup>
+                      <InputOTPSeparator />
+                      <InputOTPGroup>
+                        <InputOTPSlot index={3} />
+                        <InputOTPSlot index={4} />
+                        <InputOTPSlot index={5} />
+                      </InputOTPGroup>
+                    </InputOTP>
+                    <p className="text-sm text-gray-500">
+                      Didn't receive the code? <button className={`font-semibold ${accent.text} hover:underline`}>Resend</button>
+                    </p>
+                  </div>
+                  
+                  <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 flex gap-3">
+                    <Sparkles className="h-5 w-5 text-amber-600 shrink-0 mt-0.5" />
+                    <p className="text-sm text-amber-800">
+                      <strong>Demo Mode:</strong> You can enter any 6-digit code to proceed.
+                    </p>
+                  </div>
+
+                  <div className="flex justify-between pt-2">
+                    <Button variant="outline" onClick={() => setCurrentStep("personal")} className="gap-2"><ArrowLeft className="h-4 w-4" /> Back</Button>
+                    <Button
+                      onClick={() => {
+                        if (otpValue.length !== 6) { setError("Please enter a 6-digit OTP"); return; }
+                        setError(""); setCurrentStep("identity");
+                      }}
+                      className={`${accent.bg} ${accent.hover} text-white gap-2`}
+                    >
+                      Verify <ArrowRight className="h-4 w-4" />
                     </Button>
                   </div>
                   {error && <p className="text-sm text-red-600 flex gap-2"><AlertCircle className="h-4 w-4" />{error}</p>}
@@ -295,7 +356,7 @@ export function KycGate({ insuranceType, onVerified, accentColor = "violet" }: K
                     <p className="text-xs text-gray-500">Your data is encrypted and stored securely. We comply with all IRDAI and data protection regulations.</p>
                   </div>
                   <div className="flex justify-between pt-2">
-                    <Button variant="outline" onClick={() => setCurrentStep("personal")} className="gap-2"><ArrowLeft className="h-4 w-4" /> Back</Button>
+                    <Button variant="outline" onClick={() => setCurrentStep("otp")} className="gap-2"><ArrowLeft className="h-4 w-4" /> Back</Button>
                     <Button
                       onClick={() => {
                         if (!identity.panNumber || !validatePAN(identity.panNumber)) { setError("Enter a valid PAN number"); return; }

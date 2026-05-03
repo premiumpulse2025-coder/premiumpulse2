@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useSearchParams } from "next/navigation";
+import { AnimatePresence } from "framer-motion";
 import { Header } from "@/components/sections/header";
 import { Footer } from "@/components/sections/footer";
 import { Button } from "@/components/ui/button";
@@ -18,11 +19,17 @@ import {
   Shield,
   ArrowLeft,
   Copy,
-  Check
+  Check,
+  Landmark,
+  Wallet
 } from "lucide-react";
 import { motion } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { SiGooglepay, SiPhonepe, SiPaytm, SiWhatsapp } from "react-icons/si";
+import { FaAmazonPay } from "react-icons/fa";
+import QRCode from "react-qr-code";
+import { PaymentOtpGate } from "@/components/payment-otp-gate";
 
 type PaymentStep = "summary" | "select-app" | "confirm" | "success";
 
@@ -33,7 +40,7 @@ const upiApps = [
     color: "bg-white",
     textColor: "text-gray-800",
     borderColor: "border-gray-200 hover:border-blue-400",
-    icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Google_Pay_Logo.svg/512px-Google_Pay_Logo.svg.png",
+    icon: SiGooglepay,
     scheme: "tez://upi/pay"
   },
   { 
@@ -42,7 +49,7 @@ const upiApps = [
     color: "bg-[#5f259f]",
     textColor: "text-white",
     borderColor: "border-purple-300 hover:border-purple-500",
-    icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/PhonePe.svg/512px-PhonePe.svg.png",
+    icon: SiPhonepe,
     scheme: "phonepe://pay"
   },
   { 
@@ -51,7 +58,7 @@ const upiApps = [
     color: "bg-[#00BAF2]",
     textColor: "text-white",
     borderColor: "border-cyan-300 hover:border-cyan-500",
-    icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Paytm_Logo_%28standalone%29.svg/512px-Paytm_Logo_%28standalone%29.svg.png",
+    icon: SiPaytm,
     scheme: "paytmmp://pay"
   },
   { 
@@ -60,7 +67,7 @@ const upiApps = [
     color: "bg-[#00A650]",
     textColor: "text-white",
     borderColor: "border-green-300 hover:border-green-500",
-    icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/UPI-Logo-vector.svg/512px-UPI-Logo-vector.svg.png",
+    icon: Landmark,
     scheme: "upi://pay"
   },
   { 
@@ -69,7 +76,7 @@ const upiApps = [
     color: "bg-[#FF9900]",
     textColor: "text-black",
     borderColor: "border-orange-300 hover:border-orange-500",
-    icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Amazon_Pay_logo.svg/512px-Amazon_Pay_logo.svg.png",
+    icon: FaAmazonPay,
     scheme: "amazonpay://pay"
   },
   { 
@@ -78,7 +85,7 @@ const upiApps = [
     color: "bg-[#25D366]",
     textColor: "text-white",
     borderColor: "border-green-300 hover:border-green-500",
-    icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/WhatsApp.svg/512px-WhatsApp.svg.png",
+    icon: SiWhatsapp,
     scheme: "whatsapp://pay"
   },
   { 
@@ -87,7 +94,7 @@ const upiApps = [
     color: "bg-gradient-to-r from-blue-600 to-purple-600",
     textColor: "text-white",
     borderColor: "border-blue-300 hover:border-blue-500",
-    icon: "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/UPI-Logo-vector.svg/512px-UPI-Logo-vector.svg.png",
+    icon: Wallet,
     scheme: "upi://pay"
   }
 ];
@@ -104,7 +111,7 @@ export default function UPIPaymentPage() {
   const amount = parseInt(searchParams.get("amount") || "15000");
   const coverage = searchParams.get("coverage") || "₹5,00,000";
 
-  const upiId = "insurance@upi";
+  const upiId = "jiyadahmed02@okaxis";
   const merchantName = "PremiumPulse";
 
   const getUpiLink = (scheme: string) => {
@@ -141,9 +148,7 @@ export default function UPIPaymentPage() {
 
   const handleSelectApp = (app: typeof upiApps[0]) => {
     setSelectedApp(app.name);
-    const upiLink = getUpiLink(app.scheme);
-    window.location.href = upiLink;
-    setTimeout(() => setCurrentStep("confirm"), 500);
+    // QR code updates automatically — user scans with their phone
   };
 
   const handleConfirmPayment = () => {
@@ -163,26 +168,76 @@ export default function UPIPaymentPage() {
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const steps: { key: PaymentStep; label: string }[] = [
+    { key: "summary", label: "Summary" },
+    { key: "select-app", label: "Pay" },
+    { key: "confirm", label: "Confirm" },
+    { key: "success", label: "Done" },
+  ];
+  const stepIndex = steps.findIndex(s => s.key === currentStep);
+
   return (
+    <PaymentOtpGate accentColor="emerald">
     <div className="min-h-screen bg-gradient-to-b from-emerald-50/50 via-white to-emerald-50/30">
       <Header />
       
       <main className="pt-[88px]">
-        <section className="bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white py-16">
+        <section className="bg-gradient-to-r from-emerald-500 via-teal-500 to-emerald-600 text-white py-12">
           <div className="container mx-auto px-4">
             <div className="max-w-3xl mx-auto text-center">
-              <h1 className="text-3xl md:text-4xl font-bold mb-4">Complete Your Payment</h1>
-              <p className="text-lg text-emerald-50/90">Secure UPI payment for your insurance premium</p>
+              <motion.h1
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.4 }}
+                className="text-3xl md:text-4xl font-bold mb-4"
+              >
+                Complete Your Payment
+              </motion.h1>
+              <p className="text-lg text-emerald-50/90 mb-8">Secure UPI payment for your insurance premium</p>
+              {/* Step Progress Bar */}
+              <div className="flex items-center justify-center gap-0 max-w-md mx-auto">
+                {steps.map((step, i) => (
+                  <div key={step.key} className="flex items-center flex-1">
+                    <div className="flex flex-col items-center flex-shrink-0">
+                      <motion.div
+                        animate={{
+                          backgroundColor: i <= stepIndex ? "#ffffff" : "rgba(255,255,255,0.3)",
+                          scale: i === stepIndex ? 1.15 : 1,
+                        }}
+                        transition={{ duration: 0.3 }}
+                        className="w-8 h-8 rounded-full flex items-center justify-center text-emerald-700 font-bold text-sm shadow"
+                      >
+                        {i < stepIndex ? <Check className="w-4 h-4 text-emerald-600" /> : <span className={i <= stepIndex ? "text-emerald-700" : "text-white/60"}>{i + 1}</span>}
+                      </motion.div>
+                      <span className={`text-xs mt-1 font-medium ${i <= stepIndex ? "text-white" : "text-white/50"}`}>{step.label}</span>
+                    </div>
+                    {i < steps.length - 1 && (
+                      <div className="flex-1 h-0.5 mx-1 mb-4 overflow-hidden rounded">
+                        <motion.div
+                          className="h-full bg-white"
+                          animate={{ width: i < stepIndex ? "100%" : "0%" }}
+                          transition={{ duration: 0.4 }}
+                        />
+                        <div className="h-full bg-white/25 -mt-0.5" style={{width:"100%"}} />
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </section>
 
-        <section className="container mx-auto px-4 py-16">
+        <section className="container mx-auto px-4 py-12">
           <div className="max-w-2xl mx-auto">
+            <AnimatePresence mode="wait">
             {currentStep === "summary" && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                key="summary"
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -30 }}
+                transition={{ duration: 0.3 }}
                 className="space-y-6"
               >
                 <Card className="border-0 shadow-xl">
@@ -236,8 +291,11 @@ export default function UPIPaymentPage() {
 
             {currentStep === "select-app" && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                key="select-app"
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -30 }}
+                transition={{ duration: 0.3 }}
                 className="space-y-6"
               >
                 <Card className="border-0 shadow-xl">
@@ -266,28 +324,50 @@ export default function UPIPaymentPage() {
                       </div>
                     </div>
 
-                    <div className="space-y-4">
-                      <p className="text-base font-semibold text-gray-800">Select your UPI App:</p>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-                        {upiApps.map((app) => (
-                          <button
-                            key={app.id}
-                            onClick={() => handleSelectApp(app)}
-                            className={`flex flex-col items-center justify-center p-4 rounded-xl border-2 ${app.borderColor} transition-all hover:shadow-lg hover:scale-105 bg-white`}
-                          >
-                            <div className={`w-14 h-14 rounded-xl ${app.color} flex items-center justify-center mb-3 overflow-hidden p-2`}>
-                              <Image 
-                                src={app.icon} 
-                                alt={app.name}
-                                width={40}
-                                height={40}
-                                className="object-contain"
-                                unoptimized
-                              />
-                            </div>
-                            <span className="text-sm font-semibold text-gray-800">{app.name}</span>
-                          </button>
-                        ))}
+                    <div className="flex flex-col md:flex-row gap-8 items-center md:items-start">
+                      <div className="flex-1 space-y-4 w-full">
+                        <p className="text-base font-semibold text-gray-800">
+                          {selectedApp ? `Scan with ${selectedApp}` : "Scan QR Code to Pay"}
+                        </p>
+                        <div className="bg-white p-6 rounded-2xl border-2 border-emerald-100 shadow-sm flex flex-col items-center justify-center transition-all">
+                          <QRCode 
+                            value={getUpiLink(upiApps.find(a => a.name === selectedApp)?.scheme || "upi://pay")}
+                            size={200}
+                            level="H"
+                          />
+                          <p className="text-sm text-gray-500 mt-4 font-medium text-center">
+                            {selectedApp ? `Open ${selectedApp} to scan` : "Scan with any UPI app on your phone"}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="hidden md:flex flex-col items-center justify-center h-full pt-12">
+                        <div className="h-20 w-px bg-gray-200"></div>
+                        <span className="text-gray-400 font-medium py-2">OR</span>
+                        <div className="h-20 w-px bg-gray-200"></div>
+                      </div>
+                      <div className="md:hidden flex items-center justify-center w-full">
+                        <div className="flex-1 h-px bg-gray-200"></div>
+                        <span className="text-gray-400 font-medium px-4">OR</span>
+                        <div className="flex-1 h-px bg-gray-200"></div>
+                      </div>
+
+                      <div className="flex-1 space-y-4 w-full">
+                        <p className="text-base font-semibold text-gray-800">Open UPI App on Device</p>
+                        <div className="grid grid-cols-2 gap-3">
+                          {upiApps.map((app) => (
+                            <button
+                              key={app.id}
+                              onClick={() => handleSelectApp(app)}
+                              className={`flex flex-col items-center justify-center p-3 rounded-xl border-2 ${app.borderColor} transition-all hover:shadow-md hover:scale-105 ${selectedApp === app.name ? 'bg-emerald-50 scale-105 shadow-md ring-2 ring-emerald-400' : 'bg-white'}`}
+                            >
+                              <div className={`w-12 h-12 rounded-xl ${app.color} flex items-center justify-center mb-2 overflow-hidden p-2`}>
+                                <app.icon className={`w-8 h-8 ${app.textColor}`} />
+                              </div>
+                              <span className="text-xs font-semibold text-gray-800">{app.name}</span>
+                            </button>
+                          ))}
+                        </div>
                       </div>
                     </div>
 
@@ -321,8 +401,11 @@ export default function UPIPaymentPage() {
 
             {currentStep === "confirm" && (
               <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+                key="confirm"
+                initial={{ opacity: 0, x: 30 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -30 }}
+                transition={{ duration: 0.3 }}
                 className="space-y-6"
               >
                 <Card className="border-0 shadow-xl">
@@ -394,8 +477,11 @@ export default function UPIPaymentPage() {
 
             {currentStep === "success" && (
               <motion.div
-                initial={{ opacity: 0, scale: 0.95 }}
+                key="success"
+                initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.92 }}
+                transition={{ duration: 0.4, type: "spring", stiffness: 200, damping: 20 }}
                 className="space-y-6"
               >
                 <Card className="border-0 shadow-xl overflow-hidden">
@@ -457,11 +543,13 @@ export default function UPIPaymentPage() {
                 </Card>
               </motion.div>
             )}
+            </AnimatePresence>
           </div>
         </section>
       </main>
 
       <Footer />
     </div>
+    </PaymentOtpGate>
   );
 }
