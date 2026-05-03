@@ -59,21 +59,13 @@ export function AuthKycWrapper({ children, insuranceType, accentColor }: AuthKyc
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  if (pageState === "loading") {
-    return (
-      <div className="min-h-screen bg-white flex flex-col">
-        <Header />
-        <div className="flex-1 flex items-center justify-center">
-          <Loader2 className="h-10 w-10 animate-spin text-violet-600" />
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  useEffect(() => {
+    if (pageState === "unauthenticated") {
+      router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`);
+    }
+  }, [pageState, pathname, router]);
 
-  if (pageState === "unauthenticated") {
-    // Redirect to login
-    router.push(`/auth/login?redirect=${encodeURIComponent(pathname)}`);
+  if (pageState === "loading" || pageState === "unauthenticated") {
     return (
       <div className="min-h-screen bg-white flex flex-col">
         <Header />
