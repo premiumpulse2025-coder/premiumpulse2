@@ -186,7 +186,6 @@ function RegisterForm() {
             </Card>
           </motion.div>
         </section>
-      </main>
     );
 }
 
